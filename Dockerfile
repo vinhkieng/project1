@@ -1,22 +1,29 @@
+# 1) Sử dụng PHP + Apache
 FROM php:8.2-apache
 
-# Cài extensions
+# 2) Cài extension Laravel cần
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Bật rewrite cho Laravel
+# 3) Bật rewrite cho Laravel route
 RUN a2enmod rewrite
 
-# Copy toàn bộ source vào container
+# 4) Copy source vào container
 COPY . /var/www/html
 
-# Set thư mục làm việc
-WORKDIR /var/www/html
+# 5) Copy file cấu hình apache đặc biệt cho Laravel
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Copy cấu hình Apache để trỏ đúng public/
-COPY ./apache.conf /etc/apache2/sites-available/000-default.conf
+# 6) Cài Composer trong container
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Cấp quyền
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+# 7) Cài vendor
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+# 8) Set quyền
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# 9) Expose port 80
+EXPOSE 80
+
+# 10) Start Apache
+CMD ["apache2-foreground"]

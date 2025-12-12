@@ -1,34 +1,33 @@
 FROM php:8.2-apache
 
-# 1) Cài extension cần thiết
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    zip \
-    libzip-dev \
-    libonig-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
-
-# 2) Bật mod_rewrite cho Laravel
+# Enable Apache modules
 RUN a2enmod rewrite
 
-# 3) Copy toàn bộ code vào container
-COPY . /var/www/html
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libzip-dev zip unzip git
 
-# 4) Copy file cấu hình apache
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql zip
+
+# Copy Apache config
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-# 5) Copy composer vào container
+# Copy project files
+COPY . /var/www/html/
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# 6) Cài vendor
+# Install vendor
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# 7) Set quyền cho Laravel (storage + bootstrap)
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 8) Expose port 80 để Render nhận
 EXPOSE 80
-
-# 9) Chạy apache
 CMD ["apache2-foreground"]

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: project1-backend
+    env: docker
+    autoDeploy: true
+    plan: free
+    dockerfilePath: ./Dockerfile

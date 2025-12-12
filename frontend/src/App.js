@@ -5,9 +5,15 @@ function App() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  // QUAN TRỌNG: Cấu hình đường dẫn API động
+  // Nếu trên Vercel: nó sẽ lấy link từ biến môi trường REACT_APP_API_URL
+  // Nếu ở máy bạn: nó sẽ lấy "http://127.0.0.1:8000/api"
+  const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000/api";
+
   // Lấy danh sách tasks
   const fetchTasks = async () => {
-    const res = await fetch("http://127.0.0.1:8000/api/tasks");
+    // Sửa đường dẫn cứng thành biến API_URL
+    const res = await fetch(`${API_URL}/tasks`);
     const data = await res.json();
     setTasks(data);
   };
@@ -19,7 +25,8 @@ function App() {
 
   // Thêm task
   const addTask = async () => {
-    const res = await fetch("http://127.0.0.1:8000/api/tasks", {
+    // Sửa đường dẫn cứng thành biến API_URL
+    const res = await fetch(`${API_URL}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,7 +45,8 @@ function App() {
 
   // Xóa task
   const deleteTask = async (id) => {
-    const res = await fetch(`http://127.0.0.1:8000/api/tasks/${id}`, {
+    // Sửa đường dẫn cứng thành biến API_URL
+    const res = await fetch(`${API_URL}/tasks/${id}`, {
       method: "DELETE",
     });
 

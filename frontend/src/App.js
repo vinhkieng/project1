@@ -96,7 +96,7 @@ function App() {
                 </div>
                 <div className="d-grid">
                   <button type="submit" className="btn btn-primary btn-lg">
-                    ➕ Thêm công việc
+                    ➕ Thêm ghi chú
                   </button>
                 </div>
               </form>

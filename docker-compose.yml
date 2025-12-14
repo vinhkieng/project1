@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 1. Backend Laravel
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: project1_backend
+    ports:
+      - "8000:80"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_KEY: base64:pNBR6erYUl10AoVfyNOU43Ya/s2po5cFZ6mMlb2EBO8=
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: project1
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    # ĐOẠN ĐÃ SỬA: Bắt buộc chờ Database khởi động xong mới chạy
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 2. Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: project1_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: project1
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    # ĐOẠN ĐÃ SỬA: Thêm kiểm tra sức khỏe để biết khi nào DB sẵn sàng
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # 3. Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: project1_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:

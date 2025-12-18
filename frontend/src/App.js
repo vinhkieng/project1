@@ -68,9 +68,10 @@ function App() {
           {/* Header */}
           <div className="text-center mb-5">
             <h1 className="fw-bold text-primary">📝 Task Manager</h1>
-            <h1>Nguyễn Quang Vinh DH52201762 T5Ca2</h1>
+            <h1>Bàiktra-DH52201762-Ca2</h1>
             <p className="text-muted">Quản lý công việc và ghi chú của bạn</p>
           </div>
+          
 
           {/* Form thêm mới */}
           <div className="card shadow-sm mb-4 border-0">
